@@ -18,7 +18,9 @@
             <div class="content">
                 <div class="container-fluid">
 
-
+                    <p>
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Blanditiis assumenda ullam aperiam? Autem reiciendis inventore fugiat dolorum laudantium. Totam, asperiores? Veritatis architecto magni debitis minima amet delectus et temporibus vitae.
+                    </p>
                 </div>
             </div>
 </template>
