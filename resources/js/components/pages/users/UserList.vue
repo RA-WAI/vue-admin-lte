@@ -6,16 +6,17 @@ import * as yup from 'yup';
 import { useToastr } from '../../../toastr.js';
 import UserListItem from "./UserListItem.vue";
 import { debounce } from "lodash";
+import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 
-const users = ref([]);
+const users = ref({data: []});
 const editing = ref(false);
 const formValues = ref();
 const form = ref(null);
 const toastr  = useToastr();
 
 
-const getUser = () => {
-    axios.get('/api/users')
+const getUser = (page  = 1) => {
+    axios.get(`/api/users?page=${page}`)
     .then( (response) => {
         users.value = response.data;
     })
@@ -173,8 +174,8 @@ onMounted(() => {
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <tbody v-if="users.length > 0">
-                            <UserListItem v-for="(user, index) in users"
+                        <tbody v-if="users.data.length > 0">
+                            <UserListItem v-for="(user, index) in users.data"
                                 :key="user.id"
                                 :user="user"
                                 :index="index"
@@ -190,9 +191,13 @@ onMounted(() => {
                             </tr>
                         </tbody>
                     </table>
+
                 </div>
             </div>
-
+            <Bootstrap4Pagination
+                :data="users"
+                @pagination-change-page="getUser"
+            />
         </div>
     </div>
 
