@@ -7,17 +7,15 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-
-Route::get('api/users', [UserController::class,'index']);
-Route::post('api/users', [UserController::class,'store']);
-Route::get('api/users/search', [UserController::class, 'search']);
-Route::patch('api/users/{user}/change-role', [UserController::class, 'changeRole']);
-Route::put('api/users/{user}', [UserController::class,'update']);
-Route::delete('/api/users/{user}', [UserController::class, 'destroy']);
-
-
-
+Route::controller(UserController::class)->group(function () {
+    Route::get('/api/users', 'index');
+    Route::post('/api/users', 'store');
+    Route::get('/api/users/search', 'search');
+    Route::patch('/api/users/{user}/change-role', 'changeRole');
+    Route::put('/api/users/{user}', 'update');
+    Route::delete('/api/users/{user}', 'destroy');
+    Route::delete('/api/users', 'bulkDelete');
+});
 Route::get('{view}', ApplicationController::class)->where('view', '(.*)');
 
 

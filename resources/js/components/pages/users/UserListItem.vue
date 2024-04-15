@@ -1,11 +1,12 @@
 <template>
     <tr>
+        <th><input type="checkbox" :checked="selectedUsers.includes(user.id)" @change="toggleSelection"></th>
         <th scope="row">{{ index + 1 }}</th>
         <td>{{ user.name }}</td>
         <td>{{ user.email }}</td>
         <td>{{ user.formatted_created_at }}</td>
         <td>
-            <select name="" id="" class="form-control" @change="chnageRole(user, $event.target.value)">
+            <select name="" id="" class="form-control" @change="changeRole(user, $event.target.value)">
                 <option v-for="role in roles" :value="role.value" :selected="user.role === role.name" >
                     {{ role.name }}
                 </option>
@@ -52,9 +53,11 @@
     import { ref } from 'vue';
     import { useToastr } from '../../../toastr.js';
 
-    defineProps({
+    const props = defineProps({
         user: Object,
         index: Number,
+        selectAll: Boolean,
+        selectedUsers: Array,
     });
 
     const userIdBeingDeleted = ref(null);
@@ -67,7 +70,7 @@
         $("#confirmDeleteModel").modal("show");
     }
 
-    const emit = defineEmits(['userDeleted', 'userEdit']);
+    const emit = defineEmits(['userDeleted', 'userEdit', 'toggleSelection']);
 
     const deleteUser = () => {
         axios.delete(`/api/users/${userIdBeingDeleted.value}`)
@@ -91,13 +94,17 @@
         }
     ]);
 
-    const chnageRole = (user, role) => {
+    const changeRole = (user, role) => {
         axios.patch(`/api/users/${user.id}/change-role`, {
             role: role,
         })
         .then(() => {
             toastr.success('Change role successfully.');
         })
+    }
+
+    const toggleSelection = () => {
+        emit('toggleSelection', props.user);
     }
 
 </script>
