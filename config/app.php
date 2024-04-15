@@ -67,7 +67,7 @@ return [
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
-    'date_format' => 'd-m-Y',
+    'date_format' => 'd-m-Y h:i A',
 
     /*
     |--------------------------------------------------------------------------
