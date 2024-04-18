@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref, reactive, watch } from 'vue';
-import { Form, Field } from 'vee-validate';
+import { Form, Field, ErrorMessage } from 'vee-validate';
 import * as yup from 'yup';
 import { useToastr } from '../../../toastr.js';
 import UserListItem from "./UserListItem.vue";
@@ -13,7 +13,6 @@ const editing = ref(false);
 const formValues = ref();
 const form = ref(null);
 const toastr  = useToastr();
-
 
 const getUser = (page  = 1) => {
     axios.get(`/api/users?page=${page}`)
@@ -46,10 +45,8 @@ const addUser = () => {
 }
 
 const userEdit = (user) => {
-
     editing.value = true;
     form.value.resetForm();
-
     $('#userFormModel').modal('show');
 
     form.value =  formValues.value = {
@@ -57,7 +54,6 @@ const userEdit = (user) => {
         name: user.name,
         email: user.email,
     };
-
 }
 
 const createUserSchema = yup.object({
@@ -71,7 +67,6 @@ const editUserSchema = yup.object({
     email: yup.string().email().required(),
     password: yup.string()
         .when((password, schema) => {
-
             return (password[0] != undefined && password[0].length >= 1) ?
                     schema.required().min(8) : schema.nullable();
         }),
@@ -81,8 +76,6 @@ const updateUser = (values, {setErrors}) => {
     axios.put('/api/users/' + formValues.value.id, values)
         .then((response) => {
             const index = users.value.data.findIndex( user => user.id === response.data.id );
-            // let index = users.value.data.map(user => user.id).indexOf(response.data.id);
-
             users.value.data[index] = response.data;
             $('#userFormModel').modal('hide');
             toastr.success("User updated successfully")
@@ -95,7 +88,6 @@ const updateUser = (values, {setErrors}) => {
 }
 
 const handleSubmit = (values, actions) => {
-
     if (editing.value) {
         updateUser(values, actions);
     } else {
@@ -272,23 +264,23 @@ onMounted(() => {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <Form ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{errors, formValues}" :initial-values="formValues">
+                <Form ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{errors}" :initial-values="formValues">
                     <div class="modal-body">
 
                             <div class="form-group">
                                 <label for="name" class="col-form-label">User Name</label>
                                 <Field name="name" type="text" class="form-control" id="name" :class="{'is-invalid' : errors.name}" />
-                                <span class="invalid-feedback">{{ errors.name }}</span>
+                                <ErrorMessage class="invalid-feedback" name="name" />
                             </div>
                             <div class="form-group">
                                 <label for="email" class="col-form-label">Email</label>
                                 <Field name="email" type="email" id="email" class="form-control" :class="{'is-invalid' : errors.email}" />
-                                <span class="invalid-feedback">{{ errors.email }}</span>
+                                <ErrorMessage class="invalid-feedback" name="email" />
                             </div>
                             <div class="form-group">
                                 <label for="password" class="col-form-label">Password</label>
                                 <Field type="password" name="password" id="password" class="form-control" :class="{'is-invalid' : errors.password}" />
-                                <span class="invalid-feedback">{{ errors.password }}</span>
+                                <ErrorMessage class="invalid-feedback" name="password" />
                             </div>
 
                     </div>

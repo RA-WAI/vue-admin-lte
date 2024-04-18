@@ -13,6 +13,16 @@ class Appointment extends Model
 {
     use HasFactory, AppointmentAttribute, AppointmentRelationship;
 
+    protected $fillable = [
+        'client_id',
+        'title',
+        'description',
+        'start_time',
+        'end_time',
+        'end_time',
+        'status',
+    ];
+
     /**
      * Get the attributes that should be cast.
      *

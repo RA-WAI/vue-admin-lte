@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\ClientController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,6 +21,11 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(AppointmentController::class)->group(function () {
     Route::get('/api/appointments', 'index');
+    Route::post('/api/appointments', 'create');
+});
+
+Route::controller(ClientController::class)->group(function () {
+    Route::get('/api/all-clients', 'getAllClients');
 });
 
 Route::get('{view}', ApplicationController::class)->where('view', '(.*)');
