@@ -22,6 +22,9 @@ Route::controller(UserController::class)->group(function () {
 Route::controller(AppointmentController::class)->group(function () {
     Route::get('/api/appointments', 'index');
     Route::post('/api/appointments', 'create');
+    Route::get('/api/appointments/{appointment}/edit', 'edit');
+    Route::put('/api/appointments/{appointment}', 'update');
+    Route::delete('/api/appointments/{appointment}', 'delete');
 });
 
 Route::controller(ClientController::class)->group(function () {

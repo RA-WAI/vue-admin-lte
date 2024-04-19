@@ -30,4 +30,16 @@ class AppointmentCreateRequest extends FormRequest
             'status' => 'required|in:1,2,3',
         ];
     }
+
+    /**
+     * Return custom validation messages
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'client_id.required' => 'The client name field is required.',
+        ];
+    }
 }

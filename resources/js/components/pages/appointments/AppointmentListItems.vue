@@ -11,18 +11,52 @@
             </span>
         </td>
         <td>
-            <a >
+            <router-link :to="`/admin/appointments/${appointment.id}/edit`">
                 <i class="fa fa-edit text-warning "></i>
-            </a>
-            <a >
-                <i class="fa fa-trash text-danger ml-2"></i>
-            </a>
+            </router-link>
+
+
+            <i @click="deleteData(appointment.id)" class="fa fa-trash text-danger ml-2"></i>
+
         </td>
     </tr>
 </template>
 <script setup>
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useToastr } from '../../../toastr';
+
+const toastr = useToastr();
 const props = defineProps({
     index: Number,
     appointment: Object,
 });
+
+const emit = defineEmits(['deleteAppointment']);
+
+const deleteData = (id) => {
+    Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/api/appointments/${id}`)
+            .then((response) => {
+                toastr.success(response.data.message);
+                emit('deleteAppointment', id);
+            })
+            .catch((errors) => {
+                if (errors.response.data.message) {
+                    toastr.error(errors.response.data.message);
+                }
+            });
+    }
+    });
+
+}
 </script>

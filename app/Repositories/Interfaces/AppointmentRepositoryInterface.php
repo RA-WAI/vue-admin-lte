@@ -8,4 +8,5 @@ interface AppointmentRepositoryInterface {
      * @param array $data
      */
     public function create($data);
+
 }

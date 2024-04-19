@@ -51,4 +51,56 @@ class AppointmentController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    /**
+     * Get appointment by id
+     *
+     * @param int $id
+     */
+    public function edit(Appointment $appointment) : Appointment {
+        return $appointment;
+    }
+
+    /**
+     * Update appointment data
+     *
+     * @param array $request
+     */
+    public function update(Appointment $appointment, AppointmentCreateRequest $request)
+    {
+        try {
+            $data = $request->only([
+                'client_id',
+                'title',
+                'description',
+                'start_time',
+                'end_time',
+                'end_time',
+                'status',
+            ]);
+
+            $appointment->update($data);
+
+            return response()->json(['message' => 'Appointment successfully updated.']);
+
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Delete appointment
+     * @param Appointment $appointment
+     */
+    public function delete(Appointment $appointment)
+    {
+        try {
+            $appointment->delete();
+            return response()->json(['message' => 'Appointment successfully deleted.']);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+
+
+    }
 }

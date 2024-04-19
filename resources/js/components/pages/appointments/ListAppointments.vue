@@ -52,6 +52,7 @@
                                 :key="appointment.id"
                                 :appointment="appointment"
                                 :index="index"
+                                @delete-appointment="deleteAppointment"
                             />
                         </tbody>
                         <tbody v-else>
@@ -203,6 +204,10 @@ const createAppointment = (values, {resetForm, setErrors}) =>{
                 setErrors(errors.response.data.errors);
             }
         });
+}
+
+const deleteAppointment = (id) => {
+    appointments.value.data = appointments.value.data.filter(appointment => appointment.id !== id);
 }
 
 onMounted(() => {
