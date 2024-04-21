@@ -4,6 +4,7 @@ import AppointmentForm from './components/pages/appointments/AppointmentForm.vue
 import UserList from "./components/pages/users/UserList.vue";
 import UpdateSetting from "./components/pages/settings/UpdateSetting.vue";
 import UpdateProfile from "./components/pages/profile/UpdateProfile.vue";
+import Login from "./components/pages/auth/Login.vue";
 
 export default [
     {
@@ -40,5 +41,10 @@ export default [
         path: '/admin/profile',
         name: 'admin.profile',
         component: UpdateProfile,
-    }
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: Login,
+    },
 ]

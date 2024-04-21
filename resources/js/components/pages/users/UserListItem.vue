@@ -52,6 +52,7 @@
 
     import { ref } from 'vue';
     import { useToastr } from '../../../toastr.js';
+import Swal from 'sweetalert2';
 
     const props = defineProps({
         user: Object,
@@ -66,22 +67,46 @@
     const editing = ref(false);
 
     const confirmUserDelete = (user) => {
-        userIdBeingDeleted.value = user.id;
-        $("#confirmDeleteModel").modal("show");
-    }
 
-    const emit = defineEmits(['userDeleted', 'userEdit', 'toggleSelection']);
-
-    const deleteUser = () => {
-        axios.delete(`/api/users/${userIdBeingDeleted.value}`)
+        Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.delete(`/api/users/${user.id}`)
             .then(() => {
                 $("#confirmDeleteModel").modal("hide");
 
                 toastr.success('User deleted successfully.');
 
-                emit('userDeleted', userIdBeingDeleted.value)
+                emit('userDeleted', user.id)
             });
+        }
+    });
+
+        // userIdBeingDeleted.value = user.id;
+        // $("#confirmDeleteModel").modal("show");
+        // console.log(user, userIdBeingDeleted.value);
     }
+
+    const emit = defineEmits(['userDeleted', 'userEdit', 'toggleSelection']);
+
+    // const deleteUser = () => {
+    //     console.log(userIdBeingDeleted.value);
+    //     axios.delete(`/api/users/${userIdBeingDeleted.value}`)
+    //         .then(() => {
+    //             $("#confirmDeleteModel").modal("hide");
+
+    //             toastr.success('User deleted successfully.');
+
+    //             emit('userDeleted', userIdBeingDeleted.value)
+    //         });
+    // }
 
     const roles = ref([
         {

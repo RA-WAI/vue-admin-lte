@@ -2,24 +2,28 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->paginate();
-
+        $users = User::query()
+                ->when(request('query'), function($query, $searchQuery){
+                    $query->where('name', 'like', "%{$searchQuery}%");
+                })
+                ->latest()->paginate();
         return $users;
     }
 
     public function store()
     {
         request()->validate([
-            'name' => 'required|min:8',
+            'name' => 'required',
             'email' => 'required|unique:users,email',
             'password' => 'required|min:8',
         ]);
@@ -27,7 +31,7 @@ class UserController extends Controller
         return User::create([
             'name' => request('name'),
             'email' => request('email'),
-            'password' => bcrypt(request('passsword')),
+            'password' => Hash::make(request('password'))
         ]);
     }
 
@@ -40,7 +44,7 @@ class UserController extends Controller
         $user->update([
             'name' => request('name'),
             'email' => request('email'),
-            'password' => request('passsword') ? bcrypt(request('passsword')) : $user->password,
+            'password' => request('passsword') ? Hash::make(request('password')) : $user->password,
         ]);
 
         return $user;
@@ -59,16 +63,6 @@ class UserController extends Controller
         ]);
 
         return response()->json(['success'  => true]);
-    }
-
-    public function search()
-    {
-        $query = request('query');
-        $users = User::where('name', 'like', "%$query%")
-                    ->orWhere('email', 'like', "%$query%")
-                    ->latest()->paginate();
-
-        return response()->json($users);
     }
 
     public function bulkDelete()

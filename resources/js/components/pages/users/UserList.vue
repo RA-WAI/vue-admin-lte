@@ -11,11 +11,17 @@ import { Bootstrap4Pagination } from 'laravel-vue-pagination';
 const users = ref({data: []});
 const editing = ref(false);
 const formValues = ref();
-const form = ref(null);
+const form = reactive({
+    'name': '',
+    'email': '',
+    'password': '',
+});
 const toastr  = useToastr();
 
 const getUser = (page  = 1) => {
-    axios.get(`/api/users?page=${page}`)
+    axios.get(`/api/users?page=${page}`, {
+        params: { query: searchQuery.value},
+    })
     .then( (response) => {
         users.value = response.data;
         selectAllUsers.value = [];
@@ -41,26 +47,30 @@ const createUser = (values, { resetForm, setErrors }) => {
 
 const addUser = () => {
     editing.value = false;
+    form.name = '';
+    form.email = '';
     $('#userFormModel').modal('show');
 }
 
 const userEdit = (user) => {
     editing.value = true;
-    form.value.resetForm();
-    $('#userFormModel').modal('show');
 
-    form.value =  formValues.value = {
+    formValues.value = {
         id: user.id,
         name: user.name,
         email: user.email,
     };
+
+    $('#userFormModel').modal('show');
+    form.name = user.name;
+    form.email = user.email;
 }
 
-const createUserSchema = yup.object({
-    name: yup.string().required(),
-    email: yup.string().email().required(),
-    password: yup.string().required().min(8),
-});
+// const createUserSchema = yup.object({
+//     name: yup.string().required(),
+//     email: yup.string().email().required(),
+//     password: yup.string().required().min(8),
+// });
 
 const editUserSchema = yup.object({
     name: yup.string().required(),
@@ -95,7 +105,6 @@ const handleSubmit = (values, actions) => {
     }
 }
 
-
 const userDeleted = (userId) => {
     users.value.data = users.value.data.filter(user => user.id !== userId)
 }
@@ -103,22 +112,10 @@ const userDeleted = (userId) => {
 const searchQuery = ref(null);
 
 watch(searchQuery, debounce(() => {
-    search();
+    getUser();
 }, 300));
 
-const search = () => {
-    axios.get('/api/users/search', {
-        params: {
-            query: searchQuery.value,
-        }
-    })
-    .then(response => {
-        users.value = response.data;
-    })
-    .catch(error => {
-        console.log(error);
-    });
-}
+
 const  selectedUsers  = ref([]);
 const toggleSelection = (user) => {
     const index = selectedUsers.value.indexOf(user.id);
@@ -264,22 +261,22 @@ onMounted(() => {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <Form ref="form" @submit="handleSubmit" :validation-schema="editing ? editUserSchema : createUserSchema" v-slot="{errors}" :initial-values="formValues">
+                <Form @submit="handleSubmit" v-slot="{errors}" :initial-values="formValues">
                     <div class="modal-body">
 
                             <div class="form-group">
                                 <label for="name" class="col-form-label">User Name</label>
-                                <Field name="name" type="text" class="form-control" id="name" :class="{'is-invalid' : errors.name}" />
+                                <Field name="name" type="text" class="form-control" id="name" :class="{'is-invalid' : errors.name}" v-model="form.name" />
                                 <ErrorMessage class="invalid-feedback" name="name" />
                             </div>
                             <div class="form-group">
                                 <label for="email" class="col-form-label">Email</label>
-                                <Field name="email" type="email" id="email" class="form-control" :class="{'is-invalid' : errors.email}" />
+                                <Field name="email" type="email" id="email" class="form-control" :class="{'is-invalid' : errors.email}" v-model="form.email" />
                                 <ErrorMessage class="invalid-feedback" name="email" />
                             </div>
                             <div class="form-group">
                                 <label for="password" class="col-form-label">Password</label>
-                                <Field type="password" name="password" id="password" class="form-control" :class="{'is-invalid' : errors.password}" />
+                                <Field type="password" name="password" id="password" class="form-control" :class="{'is-invalid' : errors.password}" v-model="form.password" />
                                 <ErrorMessage class="invalid-feedback" name="password" />
                             </div>
 
