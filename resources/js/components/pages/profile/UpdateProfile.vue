@@ -1,3 +1,54 @@
+<script setup>
+import axios from 'axios';
+import { ref, onMounted, handleError } from 'vue';
+import { useToastr } from '../../../toastr.js';
+
+const form = ref({
+    'email': '',
+    'name': '',
+    'role': '',
+    'profile_image': '',
+});
+const toastr = useToastr();
+
+const getUser = () => {
+    axios.get('/api/profile')
+        .then((response) => {
+
+            form.value = response.data;
+
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+}
+const profileImg = ref(null);
+
+const openProfileImg = () => {
+    profileImg.value.click();
+}
+
+const profileImageUrl = ref(null);
+const handleProfileChange = (event) => {
+    const file = event.target.files[0];
+    profileImageUrl.value = URL.createObjectURL(file);
+
+    const formData = new FormData();
+    formData.append('profile_image', file);
+
+    axios.post('/api/upload-profile-image', formData)
+        .then((response) => {
+            toastr.success(response.data.message);
+        })
+        .catch(error => {
+            console.log(error);
+        });
+}
+
+onMounted(() => {
+    getUser();
+});
+</script>
 <template>
     <div class="content-header">
         <div class="container-fluid">
@@ -14,7 +65,6 @@
             </div>
         </div>
     </div>
-
     <div class="content">
         <div class="container-fluid">
             <div class="row">
@@ -23,12 +73,13 @@
                     <div class="card card-primary card-outline">
                         <div class="card-body box-profile">
                             <div class="text-center">
-                                <img class="profile-user-img img-fluid img-circle"
-                                src="https://w7.pngwing.com/pngs/831/88/png-transparent-user-profile-computer-icons-user-interface-mystique-miscellaneous-user-interface-design-smile-thumbnail.png"
+                                <input @change="handleProfileChange" ref="profileImg" type="file" class="d-none">
+                                <img @click="openProfileImg" class="profile-user-img img-fluid img-circle"
+                                :src="profileImageUrl ? profileImageUrl : form.profile_image"
                                 alt="User profile picture">
                             </div>
-                            <h3 class="profile-username text-center">Nina Mcintire</h3>
-                            <p class="text-muted text-center">User Role</p>
+                            <h3 class="profile-username text-center">{{ form.name }}</h3>
+                            <p class="text-muted text-center">{{ form.role }}</p>
                         </div>
                         <!-- /.card-body -->
                     </div>
@@ -48,3 +99,9 @@
         </div>
     </div>
 </template>
+<style>
+    .profile-user-img:hover {
+        background-color: blue;
+        cursor: pointer;
+    }
+</style>

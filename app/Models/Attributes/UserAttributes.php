@@ -3,6 +3,7 @@ namespace App\Models\Attributes;
 
 use App\Enums\RoleType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 Trait UserAttributes
 {
@@ -19,6 +20,15 @@ Trait UserAttributes
         return Attribute::make(
 
             get: fn($value) => RoleType::from($value)->name,
+
+        );
+    }
+
+    public function profileImage(): Attribute
+    {
+        return Attribute::make(
+
+            get: fn($value) => $value ? asset(Storage::url($value)) : asset(Storage::url('profile/default.png')),
 
         );
     }

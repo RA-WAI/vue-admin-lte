@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ApplicationController;
-use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\ClientController;
+use App\Http\Controllers\Admin\AppointmentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,6 +31,11 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(ClientController::class)->group(function () {
         Route::get('/api/all-clients', 'getAllClients');
+    });
+
+    Route::controller(ProfileController::class)->group(function (){
+        Route::get('/api/profile', 'index');
+        Route::post('/api/upload-profile-image', 'uploadProfileImage');
     });
 
     Route::get('{view}', ApplicationController::class)->where('view', '(.*)');

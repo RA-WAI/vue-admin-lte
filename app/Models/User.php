@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'profile_image',
     ];
 
     /**
@@ -49,5 +50,6 @@ class User extends Authenticatable
 
     protected $appends = [
         'formatted_created_at',
+        'profile_image'
     ];
 }
