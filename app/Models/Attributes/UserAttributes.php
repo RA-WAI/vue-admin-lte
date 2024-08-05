@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Models\Attributes;
 
 use App\Enums\RoleType;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
-Trait UserAttributes
+trait UserAttributes
 {
     /**
      * Get the user's first name.
@@ -18,18 +20,7 @@ Trait UserAttributes
     public function role(): Attribute
     {
         return Attribute::make(
-
-            get: fn($value) => RoleType::from($value)->name,
-
-        );
-    }
-
-    public function profileImage(): Attribute
-    {
-        return Attribute::make(
-
-            get: fn($value) => $value ? asset(Storage::url($value)) : asset(Storage::url('profile/default.png')),
-
+            get: fn ($value) => RoleType::from($value)->name,
         );
     }
 }

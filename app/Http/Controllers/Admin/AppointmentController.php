@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
+
 use App\Models\Appointment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -10,13 +12,19 @@ class AppointmentController extends Controller
 {
     public function __construct(
         protected AppointmentRepositoryInterface $appointmentRepo
-    )
-    {
-
+    ) {
     }
     public function index()
     {
-        return Appointment::with('client:id,first_name,last_name')
+        return Appointment::query()
+            ->when(request('query'), function ($query, $searchQuery) {
+                $query->whereHas('client', function ($query) use ($searchQuery) {
+                    $query->where('first_name', 'like', '%' . $searchQuery . '%');
+                });
+                $query->orWhere('title', 'like', '%' . $searchQuery . '%');
+                $query->orWhere('status', 'like', '%' . $searchQuery . '%');
+            })
+            ->with('client:id,first_name,last_name')
             ->orderBy('id', 'desc')->paginate()
             ->through(fn ($appointment) => [
                 'id' => $appointment->id,
@@ -57,7 +65,8 @@ class AppointmentController extends Controller
      *
      * @param int $id
      */
-    public function edit(Appointment $appointment) : Appointment {
+    public function edit(Appointment $appointment): Appointment
+    {
         return $appointment;
     }
 
@@ -82,7 +91,6 @@ class AppointmentController extends Controller
             $appointment->update($data);
 
             return response()->json(['message' => 'Appointment successfully updated.']);
-
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
         }
@@ -100,7 +108,5 @@ class AppointmentController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
         }
-
-
     }
 }

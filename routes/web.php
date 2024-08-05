@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\FileController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -30,12 +31,16 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::controller(ClientController::class)->group(function () {
-        Route::get('/api/all-clients', 'getAllClients');
+        Route::get('/api/client-options', 'getClientOptions');
     });
 
-    Route::controller(ProfileController::class)->group(function (){
+    Route::controller(ProfileController::class)->group(function () {
         Route::get('/api/profile', 'index');
         Route::post('/api/upload-profile-image', 'uploadProfileImage');
+    });
+
+    Route::controller(FileController::class)->group(function () {
+        Route::get('/api/download/{file}', 'download');
     });
 
     Route::get('{view}', ApplicationController::class)->where('view', '(.*)');

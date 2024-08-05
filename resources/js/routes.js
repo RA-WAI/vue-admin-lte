@@ -5,6 +5,7 @@ import UserList from "./components/pages/users/UserList.vue";
 import UpdateSetting from "./components/pages/settings/UpdateSetting.vue";
 import UpdateProfile from "./components/pages/profile/UpdateProfile.vue";
 import Login from "./components/pages/auth/Login.vue";
+import Detect from "./components/pages/object-detect/Detect.vue";
 
 export default [
     {
@@ -46,5 +47,10 @@ export default [
         path: '/login',
         name: 'login',
         component: Login,
+    },
+    {
+        path: '/admin/object-detection',
+        name: 'object-detection',
+        component: Detect,
     },
 ]

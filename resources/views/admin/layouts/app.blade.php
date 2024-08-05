@@ -11,22 +11,29 @@
 
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini" id="sidebarMenu">
     <div class="wrapper" id="app">
 
-        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <nav class="main-header navbar navbar-expand navbar-light">
 
             <ul class="navbar-nav">
-                <li class="nav-item">
+                <li class="nav-item" onclick="toggleSidebar()">
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i
                             class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">Home</a>
+                    <a class="nav-link d-none" id="light-mode-btn" onclick="changeTheme('light-mode')" href="#"
+                        role="button">
+                        <i class="fas fa-sun"></i>
+                    </a>
+                    <a class="nav-link" id="dark-mode-btn" onclick="changeTheme('dark-mode')" href="#"
+                        role="button">
+                        <i class="fas fa-moon"></i>
+                    </a>
                 </li>
-                <li class="nav-item d-none d-sm-inline-block">
+                {{-- <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link">Contact</a>
-                </li>
+                </li> --}}
             </ul>
 
             <ul class="navbar-nav ml-auto">
@@ -155,8 +162,7 @@
             </ul>
         </nav>
 
-
-        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <aside class="main-sidebar sidebar-light-primary elevation-4" id="app-sidebar">
 
             {{-- <a href="index3.html" class="brand-link">
                 <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
@@ -168,7 +174,8 @@
 
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="{{ auth()->user()->profile_image }}" class="img-circle elevation-2" alt="User Image">
+                        <img src="{{ Storage::url(auth()->user()->profile_image) }}" class="img-circle elevation-2"
+                            alt="User Image">
                     </div>
                     <div class="info">
                         <a href="#" class="d-block">
@@ -190,15 +197,35 @@
                             </router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/admin/appointments" active-class="active" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-alt"></i>
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fa-calendar-alt"></i>
                                 <p>
-                                    Appointments
+                                    Appointment
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
-                            </router-link>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <router-link to="/admin/appointments" active-class="active" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>
+                                            Appointments List
+                                        </p>
+                                    </router-link>
+
+                                </li>
+                                <li class="nav-item">
+                                    <router-link to="/admin/appointments/create" class="nav-link"
+                                        active-class="active">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Add New</p>
+                                    </router-link>
+                                </li>
+
+                            </ul>
                         </li>
                         <li class="nav-item">
-                            <router-link to="/admin/users" active-class="active"  class="nav-link">
+                            <router-link to="/admin/users" active-class="active" class="nav-link">
                                 <i class="nav-icon fas fa-users"></i>
                                 <p>
                                     Users
@@ -222,6 +249,14 @@
                             </router-link>
                         </li>
                         <li class="nav-item">
+                            <router-link to="/admin/object-detection" active-class="active" class="nav-link">
+                                <i class="nav-icon fa fa-wrench"></i>
+                                <p>
+                                    Object Detection
+                                </p>
+                            </router-link>
+                        </li>
+                        <li class="nav-item">
                             <form method="POST" action="{{ route('logout') }}" class="nav-link">
                                 @csrf
                                 <a href="#" onclick="event.preventDefault(); this.closest('form').submit();">
@@ -230,7 +265,7 @@
                                         Logout
                                     </p>
                                 </a>
-                        </form>
+                            </form>
                         </li>
                     </ul>
                 </nav>
@@ -259,11 +294,66 @@
                 Anything you want
             </div>
 
-            <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights
+            <strong>Copyright &copy; 2014-2021 <a href="#">AdminLTE.io</a>.</strong> All rights
             reserved.
         </footer>
     </div>
 
+    <script setup>
+        function changeTheme(theme) {
+            let app = document.getElementById('app');
+            let navBar = app.firstElementChild;
+            let lightModeBtn = document.getElementById('light-mode-btn');
+            let darkModeBtn = document.getElementById('dark-mode-btn');
+            let appSideBar = document.getElementById('app-sidebar');
+            if (theme.includes('light-mode')) {
+                app.classList.remove('dark-mode');
+                lightModeBtn.classList.add('d-none');
+                darkModeBtn.classList.remove('d-none');
+                navBar.classList.add('navbar-light');
+                navBar.classList.remove('navbar-dark');
+                appSideBar.classList.add('sidebar-light-primary');
+                appSideBar.classList.remove('sidebar-dark-primary');
+            } else {
+                app.classList.add('dark-mode');
+                darkModeBtn.classList.add('d-none');
+                lightModeBtn.classList.remove('d-none');
+                navBar.classList.add('navbar-dark');
+                navBar.classList.remove('navbar-light');
+                appSideBar.classList.add('sidebar-dark-primary');
+                appSideBar.classList.remove('sidebar-light-primary');
+            }
+
+            localStorage.setItem('theme', theme);
+
+            // change side bar menu
+            let sidebarMenu = localStorage.getItem('sidebar_menu');
+            if (sidebarMenu) {
+                let element = document.getElementById('sidebarMenu');
+                element.classList.add(sidebarMenu);
+            }
+
+
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') ||
+                'theme-light'; // Default to 'theme-light' if nothing is saved
+            changeTheme(savedTheme);
+        }
+
+        initializeTheme();
+
+        function toggleSidebar() {
+            let element = document.getElementById('sidebarMenu');
+            let className = element.className;
+            if (className.includes('sidebar-collapse')) {
+                localStorage.setItem('sidebar_menu', '');
+            } else {
+                localStorage.setItem('sidebar_menu', 'sidebar-collapse');
+            }
+        }
+    </script>
 </body>
 
 </html>

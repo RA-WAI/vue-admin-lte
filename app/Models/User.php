@@ -50,6 +50,5 @@ class User extends Authenticatable
 
     protected $appends = [
         'formatted_created_at',
-        'profile_image'
     ];
 }
